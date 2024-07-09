@@ -1,3 +1,4 @@
+rrc value=10
 Cell Search and Downlink Synchronization: Cell search is the procedure by which a UE acquires time and frequency synchronization with a cell, decode the Cell ID and PBCH (MIB) information. Detailed procedure can be read in this post.
 Uplink Synchronization:
 UE can achieve UL synchronization can by RACH Procedure. All RACH access related parameters UE can retrieve from System Information#1.  For RACH procedure, UE select a random preamble (msg#1), this preamble is referenced with the RAP ID. UE also starts a timing T300 to await the RRC Setup message from the gNB.
