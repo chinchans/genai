@@ -8,7 +8,6 @@ Smooth transition between VoWiFi and VoLTE
 If you leave the Wi-Fi range during a Wi-Fi call (VoWiFi), your smartphone will automatically switch to VoLTE (Voice over data) and the call will continue. 
 However, this will only happen if 4G/LTE is selected as Network mode on your phone and if you’re within the range of a 4G/LTE network.
 This transition is not possible when calling over Wi-Fi with a separate app such as Skype, WhatsApp, etc.
-volte value = 10
 
 What is the difference between VoLTE and VoWiFi?
 VoLTE and VoWiFi both allow you to make voice calls over the Internet.
