@@ -1,0 +1,400 @@
+SA Initial Attach Sequence in a Nutshell
+
+ 
+
+Initial Attach is the process that happens when you power on your phone. Followings are the procedures that happens at this stage.
+Cell Search and Synchronization: The UE (User Equipment) searches for nearby cells and acquires the synchronization signals (PSS and SSS) to synchronize with the gNB (gNodeB) timing.
+RRC Connection Establishment: Process of establishing radio resources.
+Network Registration: The Registration Request to AMF to register with the 5G network.
+Authentication: Authentication between UE and Network. Network Authenticate UE and UE authenticate Network
+Security Setup: The UE and network establish security keys for secure communication. This happens in two phases. NAS security and RRC security
+Network Acceptance: The AMF sends a Registration Accept message to the UE, confirming successful registration and providing configuration information such as the UE's 5G-GUTI (Globally Unique Temporary Identifier).
+RRC Reconfiguration: Network reconfigures RRC for the registered UE based on various UE capability.
+PDU Session Establishment: The process of establishing data pipe. UE initiate the process and network respond to the request and setting up the data pipe.
+SA Initial Attach Sequence In Detail
+Following is high level sequence of call processing with SA(Stand Alone) initial attach process. For the simplicity, I have listed the sequence that is exchanged between UE and NW(Network) over the air (OTA). In reality, there are a lot of other signalings happending in corenetwork during the attach process.
+
+SA Initial Attach - Overall Signaling Flow
+SA Initial Attach - Sequence in Detail
+Example 01 > NR SA Initial Registration Sequence - Amarisoft
+Get the Test Procedure and Log / Amarisoft TechAcademy
+SA Initial Attach - Overall Signaling Flow
+A simplified call processing (Signaling Flow) of SA Initial Attach process with focus on OTA (Over The Air) message is illustrated as below. If you want to get more detailed flow including the signaling flow in core network as well, For corenetwork side signaling, refer to ref [2] from event Helix which is very nicely written sequence diagram.  In the diagram below, I packed multiple steps (multiple signaling message) into one process for the simplicity. We will get the each and every detailed steps in next section.
+
+
+ 
+
+
+
+Downlink / Uplink Synchronization:
+The first step in 5G Standalone (SA) call processing is to synchronize the UE (User Equipment) with the gNB (gNodeB). We can split this into two parts : Downlink synchronization and Uplink synchronization. Downlink sync comes first and then Uplink sync happens.
+
+Downlink Synchronization : the UE performs cell search and acquiring the synchronization signals, Primary Synchronization Signal (PSS) and Secondary Synchronization Signal (SSS), which help the UE to identify the cell and synchronize with its timing.
+
+Uplink Synchronization : This is achieved by RACH Process. The Random Access Channel (RACH) is used by the UE for initial uplink synchronization with the gNB. It involves transmitting a randomly chosen preamble from the UE, which the gNB detects and responds with a timing adjustment. This process enables the UE to align its transmission timing with the gNB, allowing for efficient communication.
+
+RRC Establishment:
+After synchronization, the UE initiates the Radio Resource Control (RRC) connection establishment procedure by sending an RRCSetupRequest message to the gNB. The gNB responds with an RRCSetup message, which includes essential configuration information for the UE to access network resources.
+
+Registration Request:
+Once the RRC connection is established, the UE sends a Registration Request message to the network (Core Network, specifically the Access and Mobility Management Function, AMF) to register with the 5G network. This message includes important information such as the UE's security credentials and UE's network capability.
+
+Authentication Process:
+To ensure secure communication, the network initiates an authentication process. The AMF generates an authentication challenge for the UE, which includes a random number and an expected authentication response. The UE computes the authentication response based on the challenge and its security credentials, and sends it back to the AMF. If the response matches the expected value, the authentication is successful.
+
+Security Process:
+After successful authentication, the UE and network establish security keys for secure communication. The AMF sends a Security Mode Command to the UE, specifying the security algorithms to be used for ciphering and integrity protection. The UE acknowledges the command with a Security Mode Complete message.
+
+Registration Accept:
+Once the security process is complete, the AMF sends a Registration Accept message to the UE, which includes the UE's 5G-GUTI (Globally Unique Temporary Identifier) and other relevant configuration information. The UE is now successfully registered with the 5G network.
+
+RrcReconfiguration:
+After successful registration, the gNB sends an RRCReconfiguration message to the UE, which includes the configuration information necessary for data transmission, such as the Radio Bearer and Physical Layer configurations.
+
+PDU Session Establishment Request:
+To establish a data session, the UE sends a PDU (Protocol Data Unit) Session Establishment Request message to the network (specifically, the Session Management Function, SMF). This message includes the UE's data session requirements, SSC Mode, PCO, DNN etc.
+
+PDU Session Establishment Accept:
+The SMF processes the PDU Session Establishment Request and allocates the necessary resources for the data session. The SMF sends a PDU Session Establishment Accept message to the UE, which contains the PDU session configuration information, such as the allocated QoS and the IP address. The UE is now ready for data transmission over the established PDU session.
+
+SA Initial Attach - Sequence in Detail
+
+The detailed mechanism for each of these step is very complicated process which cannot be described in the single page. Try follow through the hyperlink at each step if you want further details. Notice that there are multiple linkes even at single step. I am just trying to provide just high level / skeleton in this page.   
+
+ 
+
+Step
+
+Direction
+
+Message
+
+Comment
+
+1
+
+UE <- NW
+
+SSB (PSS,SSS,MIB)	 
+2
+
+UE <- NW
+
+PDCCH / CORESET 0 / DCI 1_0	 
+3
+
+UE <- NW
+
+SIB1	 
+4
+
+UE <- NW
+
+PDCCH / DCI 1_0	 
+5
+
+UE <- NW
+
+Other SIBs	 
+6
+
+UE -> NW
+
+Msg1 (PRACH/Preamble)	 
+7
+
+UE <- NW
+
+(PDCCH / DCI 1_0, RA_RNTI)
+
+ 
+8
+
+UE <- NW
+
+Msg2 (PDSCH / Random Access Response)	 
+9
+
+UE -> NW
+
+Msg3 (RRC Setup Request)	 
+10
+
+UE <- NW
+
+(PDCCH / DCI 1_0, T_C_RNTI)
+
+ 
+11
+
+UE <- NW
+
+Msg4 (PDSCH / CR+RRC Setup)	 
+12
+
+UE <- NW
+
+(PDCCH / DCI 0_0 or 0_1, C_RNTI)
+
+ 
+13
+
+UE -> NW
+
+PUCCH or PUSCH / UCI (HARQ ACK/NACK)
+
+ 
+14
+
+UE -> NW
+
+(PUSCH) RRCSetupComplete+NAS:RegistrationRequest	 
+15
+
+UE <- NW
+
+(PDCCH/ DCI 1_0 or 1_1, C_RNTI)
+
+ 
+16
+
+UE <- NW
+
+(PDSCH) NAS:IdentityRequest
+
+ 
+17
+
+UE -> NW
+
+PUCCH or PUSCH / UCI (HARQ ACK/NACK)
+
+ 
+18
+
+UE <- NW
+
+(PDCCH/ DCI 0_0 or 0_1, C_RNTI)
+
+ 
+19
+
+UE -> NW
+
+(PUSCH) NAS:IdentityResponse
+
+ 
+20
+
+UE <- NW
+
+(PDCCH/ DCI 1_0 or 1_1, C_RNTI)
+
+ 
+21
+
+UE <- NW
+
+(PDSCH) NAS:AuthenticationRequest
+
+ 
+22
+
+UE -> NW
+
+PUCCH or PUSCH / UCI (HARQ ACK/NACK)
+
+ 
+23
+
+UE <- NW
+
+(PDCCH/ DCI 0_0 or 0_1, C_RNTI)
+
+ 
+24
+
+UE -> NW
+
+(PUSCH) NAS:AuthenticationResponse
+
+ 
+25
+
+UE <- NW
+
+(PDCCH/ DCI 1_0 or 1_1, C_RNTI)
+
+ 
+26
+
+UE <- NW
+
+(PDSCH) NAS:SecurityModeCommand
+
+ 
+27
+
+UE -> NW
+
+PUCCH or PUSCH / UCI (HARQ ACK/NACK)
+
+ 
+28
+
+UE <- NW
+
+(PDCCH/ DCI 0_0 or 0_1, C_RNTI)
+
+ 
+29
+
+UE -> NW
+
+(PUSCH) NAS:SecurityModeCommandComplete
+
+ 
+30
+
+UE <- NW
+
+(PDCCH/ DCI 1_0 or 1_1, C_RNTI)
+
+ 
+31
+
+UE <- NW
+
+(PDSCH) RRC:SecurityModeCommand
+
+ 
+32
+
+UE -> NW
+
+PUCCH or PUSCH / UCI (HARQ ACK/NACK)
+
+ 
+33
+
+UE <- NW
+
+(PDCCH/ DCI 0_0 or 0_1, C_RNTI)
+
+ 
+34
+
+UE -> NW
+
+(PUSCH) RRC:SecurityModeCommandComplete
+
+ 
+35
+
+UE <- NW
+
+(PDCCH/ DCI 1_0 or 1_1, C_RNTI)
+
+ 
+36
+
+UE <- NW
+
+(PDSCH) RRCReconfiguration + NAS : Registration Accept
+
+ 
+37
+
+UE -> NW
+
+PUCCH or PUSCH / UCI (HARQ ACK/NACK)
+
+ 
+38
+
+UE <- NW
+
+(PDCCH/ DCI 0_0 or 0_1, C_RNTI)
+
+ 
+39
+
+UE -> NW
+
+(PUSCH) RRCReconfigurationComplete + NAS : Registration Complete
+
+ 
+40
+
+UE <- NW
+
+(PDCCH/ DCI 0_0 or 0_1, C_RNTI)
+
+ 
+41
+
+UE -> NW
+
+(PUSCH) ULInformationTransfer + UL NAS Transport
+
+            + PDU Session Establishment Request
+
+ 
+42
+
+UE <- NW
+
+(PDCCH/ DCI 0_0 or 0_1, C_RNTI)
+
+ 
+43
+
+UE <- NW
+
+(PDSCH) DLInformationTransfer + DL NAS Transport
+
+           + PDU Session Establishment Accept
+
+ 
+44
+
+UE -> NW
+
+PUCCH or PUSCH / UCI (HARQ ACK/NACK)
+
+ 
+ 
+Example 01 > NR SA Initial Registration Sequence - Amarisoft
+Following is a sample protocol sequence for NR SA Registration kindly provided by Amarisoft in its web based log viewer
+
+
+For the example of the contents of these messages click on the message link shown in the above table.
+
+ 
+
+NOTE : If you want to see the contents of full log with Amarisoft Log viewer, go to LogAnalysis section and click on 'Sample Log' in this tutorial of Amarisoft TechAcademy.
+
+ 
+
+
+
+ 
+
+Followings are contents of the signaling message for the SA initial sequence. Some of the message are not listed here because it would not be considered mandatory.
+
+
+[RRC Setup Request]
+[RRC Setup]
+[Registration Request]
+[Authentication Request]
+[Authentication Response]
+[Security Mode Command - NAS]
+[Security Mode Complete - NAS]
+[Security Mode Command - RRC]
+[Security Mode Complete - RRC]
+[Registration Accept]
+[Registration Complete]
+[RrcReconfiguration]
+[PDU Session Establishment Request]
+[PDU Session Establishment Accept]
+ 
